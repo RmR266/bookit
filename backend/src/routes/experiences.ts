@@ -1,19 +1,27 @@
 import { Router } from 'express';
-import Experience from '../models/Experience';
-
 const router = Router();
 
-// GET /api/experiences
-router.get('/', async (req, res) => {
-  const exps = await Experience.find();
-  res.json(exps);
-});
+// Sample data for now (until DB connection is ready)
+const experiences = [
+  {
+    _id: '1',
+    title: 'Mountain Trekking',
+    description: 'Explore the scenic mountain trails.',
+    price: 2999,
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
+  },
+  {
+    _id: '2',
+    title: 'Scuba Diving',
+    description: 'Dive into crystal clear waters.',
+    price: 4999,
+    image: 'https://images.unsplash.com/photo-1528701800489-20be0b6f3d5d'
+  }
+];
 
-// GET /api/experiences/:id
-router.get('/:id', async (req, res) => {
-  const exp = await Experience.findById(req.params.id);
-  if (!exp) return res.status(404).json({ message: 'Not found' });
-  res.json(exp);
+// GET /api/experiences
+router.get('/', (req, res) => {
+  res.json(experiences);
 });
 
 export default router;

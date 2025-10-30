@@ -9,6 +9,7 @@ import ExperienceDetails from './pages/ExperienceDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Checkout from './pages/Checkout'; // added checkout page
+import Confirmation from './pages/Confirmation'; // ✅ added confirmation page
 
 export default function App() {
   return (
@@ -29,6 +30,9 @@ export default function App() {
 
           {/* Checkout */}
           <Route path="/checkout" element={<Checkout />} />
+
+          {/* ✅ Confirmation page */}
+          <Route path="/confirmation" element={<Confirmation />} />
 
           {/* Protected route */}
           <Route

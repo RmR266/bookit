@@ -1,45 +1,15 @@
-import { Router } from 'express';
-import Experience from '../models/Experience';
-import mongoose from 'mongoose';
+import express, { Request, Response } from "express";
+import Booking from "../models/Booking";
 
-const router = Router();
+const router = express.Router();
 
-/**
- * POST /api/bookings
- * body: { experienceId, slotIndex, name, email }
- */
-router.post('/', async (req, res) => {
-  const { experienceId, slotIndex, name, email } = req.body;
-  if (!experienceId || slotIndex === undefined || !name || !email) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+router.post("/", async (req: Request, res: Response) => {
   try {
-    const exp = await Experience.findById(experienceId).session(session);
-    if (!exp) throw new Error('Experience not found');
-
-    const slot = exp.slots[slotIndex];
-    if (!slot) throw new Error('Slot not found');
-
-    if (slot.booked >= slot.capacity) {
-      throw new Error('Slot is sold out');
-    }
-
-    exp.slots[slotIndex].booked += 1;
-    await exp.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.json({ success: true, message: 'Booking confirmed', slot });
-  } catch (err: any) {
-    await session.abortTransaction();
-    session.endSession();
+    const booking = await Booking.create(req.body);
+    res.status(201).json({ success: true, booking });
+  } catch (err) {
     console.error(err);
-    res.status(400).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: "Booking failed" });
   }
 });
 

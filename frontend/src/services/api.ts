@@ -10,7 +10,11 @@ const api = axios.create({
 // Automatically attach JWT token if stored
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    // ensure headers object exists
+    if (!config.headers) config.headers = {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
@@ -24,16 +28,19 @@ export const login = (data: { email: string; password: string }) =>
 export const getProfile = () => api.get('/auth/me');
 
 // ---------- EXPERIENCES ----------
+// normalize responses so frontend can rely on consistent return shapes
+
 export const getExperiences = async () => {
   const res = await api.get('/experiences');
-  // Backend returns an array directly, not { experiences: [...] }
-  return res.data;
+  // backend returns { experiences: [...] } — return the array
+  if (Array.isArray(res.data)) return res.data;
+  return res.data.experiences || [];
 };
 
 export const getExperienceById = async (id: string) => {
   const res = await api.get(`/experiences/${id}`);
-  // Backend returns a single object, not { experience: {...} }
-  return res.data;
+  // backend returns { experience: {...} }
+  return res.data.experience || res.data;
 };
 
 // ---------- BOOKINGS ----------

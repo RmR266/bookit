@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
-import Navbar from '../components/Navbar';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 interface Experience {
   _id: string;
   title: string;
   description: string;
   price: number;
-  imageUrl: string;
   location?: string;
+  images?: string[];
 }
 
 export default function Home() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [filtered, setFiltered] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadExperiences() {
       try {
-        const res = await api.get('/experiences');
+        const res = await api.get("/experiences");
         const data = Array.isArray(res.data)
           ? res.data
           : res.data.experiences || [];
-
         setExperiences(data);
         setFiltered(data);
       } catch (err) {
-        console.error('Failed to fetch experiences:', err);
+        console.error("Failed to fetch experiences:", err);
       } finally {
         setLoading(false);
       }
@@ -61,9 +62,13 @@ export default function Home() {
                 className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden"
               >
                 <img
-                  src={exp.imageUrl || 'https://via.placeholder.com/400x250'}
+                  src={exp.images?.[0] || "https://via.placeholder.com/400x250"}
                   alt={exp.title}
-                  className="h-48 w-full object-cover"
+                  className="h-48 w-full object-cover block"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src =
+                      "https://via.placeholder.com/400x250";
+                  }}
                 />
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-2">
@@ -81,7 +86,10 @@ export default function Home() {
                     <span className="text-gray-800 font-medium">
                       From ₹{exp.price}
                     </span>
-                    <button className="bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 text-sm">
+                    <button
+                      onClick={() => navigate(`/experiences/${exp._id}`)}
+                      className="bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 text-sm cursor-pointer active:scale-95"
+                    >
                       View Details
                     </button>
                   </div>

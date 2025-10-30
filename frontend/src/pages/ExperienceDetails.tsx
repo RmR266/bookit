@@ -38,7 +38,6 @@ export default function ExperienceDetails() {
       try {
         const data = await getExperienceById(id as string);
 
-        // 🔧 Flatten nested slots [{ date, times: [...] }] → [{ date, time, capacity, booked }]
         const flatSlots =
           data?.slots?.flatMap((s: any) =>
             s.times.map((t: any) => ({
@@ -50,7 +49,6 @@ export default function ExperienceDetails() {
           ) || [];
 
         setExp({ ...data, slots: flatSlots });
-
         const firstSlot = flatSlots?.[0];
         if (firstSlot) setSelectedDate(firstSlot.date);
       } catch (err) {
@@ -89,30 +87,21 @@ export default function ExperienceDetails() {
   }
 
   async function handleConfirm() {
-    setMessage('');
-    if (selectedSlotIndex === null || !exp) {
-      setMessage('Please select a date and time slot.');
-      return;
-    }
-
-    setBookingLoading(true);
-    try {
-      const res = await createBooking({
-        experienceId: exp._id,
-        slotIndex: selectedSlotIndex,
-        name: 'Guest User',
-        email: 'guest@example.com',
-      });
-      setMessage(res.message || 'Booking confirmed!');
-    } catch (err: any) {
-      setMessage(err?.response?.data?.message || err?.message || 'Booking failed.');
-    } finally {
-      setBookingLoading(false);
-    }
+    if (!exp || selectedSlotIndex === null) return;
+    navigate('/checkout', {
+      state: {
+        experience: exp,
+        selectedSlotIndex,
+        quantity,
+        total,
+      },
+    });
   }
 
   if (loading) return <div className="p-6 text-center">Loading experience...</div>;
   if (!exp) return <div className="p-6 text-center">Experience not found.</div>;
+
+  const isConfirmEnabled = selectedDate && selectedSlotIndex !== null;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -140,8 +129,7 @@ export default function ExperienceDetails() {
               alt={exp.title}
               className="w-full h-[500px] object-cover rounded-xl mb-8 shadow-md"
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src =
-                  '/fallback.jpg'; // <-- optional fallback if image fails
+                (e.currentTarget as HTMLImageElement).src = '/fallback.jpg';
               }}
             />
           )}
@@ -181,7 +169,7 @@ export default function ExperienceDetails() {
             </div>
           </div>
 
-          {/* 🕒 Time Selection (Dropdown) */}
+          {/* 🕒 Time Selection */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Choose time</h3>
             <select
@@ -219,7 +207,7 @@ export default function ExperienceDetails() {
           {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
         </div>
 
-        {/* ✅ Right: Checkout Summary (Fixed + Divider) */}
+        {/* ✅ Right: Checkout Summary */}
         <aside className="lg:col-span-1">
           <div
             className="bg-gray-50 border rounded-lg p-5 shadow-sm sticky top-6 select-none cursor-default"
@@ -259,7 +247,7 @@ export default function ExperienceDetails() {
               <div>₹{taxes}</div>
             </div>
 
-            {/* Divider line */}
+            {/* Divider */}
             <hr className="my-4 border-gray-300" />
 
             <div className="flex justify-between items-center mb-4">
@@ -267,12 +255,18 @@ export default function ExperienceDetails() {
               <div className="text-lg font-bold">₹{total}</div>
             </div>
 
+            {/* 🟨 Confirm Button (yellow when enabled) */}
             <button
               onClick={handleConfirm}
-              disabled={bookingLoading || selectedSlotIndex === null}
-              className="w-full py-2 rounded bg-gray-300 disabled:opacity-60 disabled:cursor-not-allowed text-black font-semibold"
+              disabled={!isConfirmEnabled}
+              className={`w-full py-2 rounded font-semibold transition
+                ${
+                  isConfirmEnabled
+                    ? 'bg-yellow-400 hover:bg-yellow-500 text-black'
+                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                }`}
             >
-              {bookingLoading ? 'Confirming...' : 'Confirm'}
+              Confirm
             </button>
 
             <div className="text-xs text-gray-400 mt-3">

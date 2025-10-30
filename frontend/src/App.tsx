@@ -8,25 +8,29 @@ import Experiences from './pages/Experiences';
 import ExperienceDetails from './pages/ExperienceDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Checkout from './pages/Checkout'; // added checkout page
 
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ✅ Navbar visible on all pages */}
+      {/* Navbar visible on all pages */}
       <Navbar />
 
       <main className="pt-4">
         <Routes>
-          {/* 🌍 Public Routes */}
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/* 🧭 Experiences Listing + Details */}
+          {/* Experiences */}
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/experiences/:id" element={<ExperienceDetails />} />
 
-          {/* 🔒 Protected Route */}
+          {/* Checkout */}
+          <Route path="/checkout" element={<Checkout />} />
+
+          {/* Protected route */}
           <Route
             path="/welcome"
             element={
@@ -36,7 +40,7 @@ export default function App() {
             }
           />
 
-          {/* Fallback Redirect */}
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

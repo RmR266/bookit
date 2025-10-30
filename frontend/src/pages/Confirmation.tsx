@@ -3,18 +3,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 
 export default function Confirmation() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const refId = location.state?.refId;
+  const location = useLocation();
+  const { refId } = location.state || {};
 
   return (
-    <div className="flex flex-col items-center justify-center h-[80vh] text-center space-y-4">
-      <CheckCircle className="w-16 h-16 text-green-500" />
-      <h1 className="text-2xl font-semibold">Booking Confirmed</h1>
-      <p className="text-gray-500">Ref ID: {refId || "N/A"}</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-center">
+      <CheckCircle className="text-green-500 w-16 h-16 mb-4" />
+      <h1 className="text-2xl font-bold mb-2">Booking Confirmed</h1>
+      <p className="text-gray-600 text-lg mb-6">Ref ID: {refId || "N/A"}</p>
       <button
-        onClick={() => navigate("/home")}
-        className="mt-4 px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition"
+        onClick={() => navigate("/")}
+        className="px-5 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-800 transition"
       >
         Back to Home
       </button>

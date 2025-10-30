@@ -29,7 +29,6 @@ export const getProfile = () => api.get('/auth/me');
 
 // ---------- EXPERIENCES ----------
 // normalize responses so frontend can rely on consistent return shapes
-
 export const getExperiences = async () => {
   const res = await api.get('/experiences');
   // backend returns { experiences: [...] } — return the array
@@ -45,10 +44,17 @@ export const getExperienceById = async (id: string) => {
 
 // ---------- BOOKINGS ----------
 export const createBooking = async (data: {
-  experienceId: string;
-  slotIndex: number;
   name: string;
   email: string;
+  promo: string;
+  experience: string;
+  date: string;
+  time: string;
+  qty: number;
+  subtotal: number;
+  taxes: number;
+  total: number;
+  refId: string;
 }) => {
   const res = await api.post('/bookings', data);
   return res.data;

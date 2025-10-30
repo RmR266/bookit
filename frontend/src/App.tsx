@@ -7,31 +7,39 @@ import Home from './pages/Home';
 import Experiences from './pages/Experiences';
 import ExperienceDetails from './pages/ExperienceDetails';
 import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
 
 export default function App() {
   return (
-    <Routes>
-      {/* 🌍 Public Routes */}
-      <Route path="/" element={<Home />} /> {/* Landing Page */}
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+    <div className="min-h-screen bg-gray-50">
+      {/* ✅ Navbar visible on all pages */}
+      <Navbar />
 
-      {/* 🧭 Experiences Listing + Details */}
-      <Route path="/experiences" element={<Experiences />} />
-      <Route path="/experiences/:id" element={<ExperienceDetails />} />
+      <main className="pt-4">
+        <Routes>
+          {/* 🌍 Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
 
-      {/* 🔒 Protected Route */}
-      <Route
-        path="/welcome"
-        element={
-          <ProtectedRoute>
-            <Welcome />
-          </ProtectedRoute>
-        }
-      />
+          {/* 🧭 Experiences Listing + Details */}
+          <Route path="/experiences" element={<Experiences />} />
+          <Route path="/experiences/:id" element={<ExperienceDetails />} />
 
-      {/* Fallback Redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          {/* 🔒 Protected Route */}
+          <Route
+            path="/welcome"
+            element={
+              <ProtectedRoute>
+                <Welcome />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
   );
 }

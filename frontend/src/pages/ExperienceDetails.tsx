@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getExperienceById, createBooking } from '../services/api';
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { getExperienceById, createBooking } from "../services/api";
 
 interface Slot {
   date: string;
@@ -28,7 +29,7 @@ export default function ExperienceDetails() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
@@ -36,12 +37,11 @@ export default function ExperienceDetails() {
       try {
         const data = await getExperienceById(id as string);
         setExp(data);
-        // default date selection to first available date
         const firstSlot = data?.slots?.[0];
         if (firstSlot) setSelectedDate(firstSlot.date);
       } catch (err) {
         console.error(err);
-        navigate('/experiences');
+        navigate("/experiences");
       } finally {
         setLoading(false);
       }
@@ -49,14 +49,11 @@ export default function ExperienceDetails() {
     if (id) load();
   }, [id]);
 
-  // derive unique dates from slots
   const dates = useMemo(() => {
     if (!exp) return [];
-    const unique = Array.from(new Set(exp.slots.map((s) => s.date)));
-    return unique;
+    return Array.from(new Set(exp.slots.map((s) => s.date)));
   }, [exp]);
 
-  // times for selected date with original slot indices (so we have index for booking)
   const timesForSelectedDate = useMemo(() => {
     if (!exp || !selectedDate) return [];
     return exp.slots
@@ -64,12 +61,7 @@ export default function ExperienceDetails() {
       .filter((s) => s.date === selectedDate);
   }, [exp, selectedDate]);
 
-  const subtotal = useMemo(() => {
-    if (!exp) return 0;
-    return exp.price * quantity;
-  }, [exp, quantity]);
-
-  // taxes: example 6% tax (adjust as per spec)
+  const subtotal = useMemo(() => (exp ? exp.price * quantity : 0), [exp, quantity]);
   const TAX_RATE = 0.06;
   const taxes = Math.round(subtotal * TAX_RATE);
   const total = subtotal + taxes;
@@ -77,31 +69,29 @@ export default function ExperienceDetails() {
   function incQuantity() {
     setQuantity((q) => Math.min(q + 1, 10));
   }
+
   function decQuantity() {
     setQuantity((q) => Math.max(q - 1, 1));
   }
 
   async function handleConfirm() {
-    setMessage('');
+    setMessage("");
     if (selectedSlotIndex === null || !exp) {
-      setMessage('Please select a date and time slot.');
+      setMessage("Please select a date and time slot.");
       return;
     }
 
-    const absoluteSlotIndex = selectedSlotIndex; // in our implementation selectedSlotIndex is absolute index in exp.slots
     setBookingLoading(true);
     try {
-      // using dummy booking API — createBooking expects experienceId, slotIndex, name, email
       const res = await createBooking({
         experienceId: exp._id,
-        slotIndex: absoluteSlotIndex,
-        name: 'Guest User',
-        email: 'guest@example.com',
+        slotIndex: selectedSlotIndex,
+        name: "Guest User",
+        email: "guest@example.com",
       });
-      setMessage(res.message || 'Booking confirmed!');
-      // If using DB model, you would probably navigate to a result page with booking id
+      setMessage(res.message || "Booking confirmed!");
     } catch (err: any) {
-      setMessage(err?.response?.data?.message || err?.message || 'Booking failed.');
+      setMessage(err?.response?.data?.message || err?.message || "Booking failed.");
     } finally {
       setBookingLoading(false);
     }
@@ -112,40 +102,59 @@ export default function ExperienceDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left: main content */}
-        <div className="lg:col-span-2">
-          {/* image */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Left: Experience Details */}
+        <div className="lg:col-span-2 relative">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate("/")}
+            className="absolute -top-14 left-0 flex items-center gap-2 px-4 py-2 rounded-full
+                       bg-white/90 backdrop-blur-sm shadow border border-gray-200
+                       text-gray-700 hover:text-black hover:shadow-md hover:scale-105 transition-all duration-200"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="font-medium text-sm">Back to Home</span>
+          </button>
+
+          {/* Larger Image Display */}
           {exp.images?.[0] && (
             <img
               src={exp.images[0]}
               alt={exp.title}
-              className="w-full h-72 object-cover rounded-lg mb-6 shadow"
+              className="w-full h-[500px] object-cover rounded-xl mb-8 shadow-md"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src =
+                  "https://via.placeholder.com/1200x700";
+              }}
             />
           )}
 
-          <h1 className="text-2xl font-bold mb-2">{exp.title}</h1>
-          <p className="text-gray-600 mb-4">{exp.description}</p>
+          <h1 className="text-3xl font-bold mb-3">{exp.title}</h1>
+          <p className="text-gray-600 mb-6">{exp.description}</p>
 
-          {/* Choose date chips */}
-          <div className="mb-6">
+          {/* Date Selection */}
+          <div className="mb-8">
             <h3 className="font-semibold mb-2">Choose date</h3>
             <div className="flex flex-wrap gap-3">
               {dates.map((d) => {
                 const isActive = d === selectedDate;
-                // show short friendly date label if you want: Oct 22 -> formatted
-                const label = new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const label = new Date(d).toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                });
                 return (
                   <button
                     key={d}
                     onClick={() => {
                       setSelectedDate(d);
-                      // reset selected slot when date changes
                       setSelectedSlotIndex(null);
                     }}
-                    className={`px-3 py-2 rounded-md border ${
-                      isActive ? 'bg-yellow-100 border-yellow-400' : 'bg-white border-gray-200'
-                    }`}
+                    className={`px-4 py-2 rounded-md border text-sm font-medium transition-all
+                      ${
+                        isActive
+                          ? "bg-yellow-100 border-yellow-400 text-yellow-800"
+                          : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
                   >
                     {label}
                   </button>
@@ -154,37 +163,43 @@ export default function ExperienceDetails() {
             </div>
           </div>
 
-          {/* Choose time */}
-          <div className="mb-6">
+          {/* Time Selection */}
+          <div className="mb-8">
             <h3 className="font-semibold mb-2">Choose time</h3>
             <div className="flex flex-wrap gap-3">
               {timesForSelectedDate.map((slot) => {
                 const left = slot.capacity - slot.booked;
-                const absoluteIndex = slot.idx;
-                const isSelected = selectedSlotIndex === absoluteIndex;
+                const isSelected = selectedSlotIndex === slot.idx;
                 const soldOut = left <= 0;
                 return (
                   <button
-                    key={absoluteIndex}
-                    onClick={() => !soldOut && setSelectedSlotIndex(absoluteIndex)}
+                    key={slot.idx}
+                    onClick={() => !soldOut && setSelectedSlotIndex(slot.idx)}
                     disabled={soldOut}
-                    className={`px-4 py-2 rounded-md border text-left flex items-center gap-3 min-w-[160px] ${
-                      soldOut
-                        ? 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed'
-                        : isSelected
-                        ? 'bg-blue-50 border-blue-500'
-                        : 'bg-white border-gray-200'
-                    }`}
+                    className={`px-5 py-2 rounded-md border text-left flex items-center gap-3 min-w-[160px] transition-all
+                      ${
+                        soldOut
+                          ? "bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed"
+                          : isSelected
+                          ? "bg-blue-50 border-blue-500 text-blue-700"
+                          : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     <div className="flex-1">
                       <div className="font-medium">{slot.time}</div>
-                      <div className="text-xs text-gray-500">All times are in IST (GMT +5:30)</div>
+                      <div className="text-xs text-gray-500">
+                        All times are in IST (GMT +5:30)
+                      </div>
                     </div>
                     <div className="text-sm">
                       {soldOut ? (
-                        <span className="px-2 py-1 text-xs bg-gray-200 rounded">Sold out</span>
+                        <span className="px-2 py-1 text-xs bg-gray-200 rounded">
+                          Sold out
+                        </span>
                       ) : (
-                        <span className="px-2 py-1 text-xs bg-yellow-100 rounded">{left} left</span>
+                        <span className="px-2 py-1 text-xs bg-yellow-100 rounded">
+                          {left} left
+                        </span>
                       )}
                     </div>
                   </button>
@@ -193,20 +208,23 @@ export default function ExperienceDetails() {
             </div>
           </div>
 
-          {/* About / notes */}
+          {/* ✅ Compact About Section */}
           <div className="mt-8">
-            <h3 className="font-semibold mb-2">About</h3>
-            <div className="bg-white p-4 rounded border text-sm text-gray-600">
-              Scenic routes, trained guides, and safety briefing. Minimum age 10. Gear and safety equipment provided.
+            <h3 className="font-semibold mb-2 text-gray-900">About</h3>
+            <div className="bg-gray-100 text-gray-700 text-sm rounded-md px-4 py-2 leading-relaxed shadow-sm">
+              Scenic routes, trained guides, and safety briefing. Minimum age 10. Gear and
+              safety equipment provided.
             </div>
           </div>
 
-          {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
+          {message && (
+            <div className="mt-4 text-center text-sm text-gray-700">{message}</div>
+          )}
         </div>
 
-        {/* Right: summary card */}
+        {/* Right: Summary Card */}
         <aside className="lg:col-span-1">
-          <div className="bg-white border rounded-lg p-5 shadow-sm sticky top-6">
+          <div className="bg-gray-50 border rounded-lg p-5 shadow-sm sticky top-6 select-none cursor-default">
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm text-gray-500">Starts at</div>
               <div className="text-lg font-semibold">₹{exp.price}</div>
@@ -252,11 +270,12 @@ export default function ExperienceDetails() {
               disabled={bookingLoading || selectedSlotIndex === null}
               className="w-full py-2 rounded bg-gray-300 disabled:opacity-60 disabled:cursor-not-allowed text-black font-semibold"
             >
-              {bookingLoading ? 'Confirming...' : 'Confirm'}
+              {bookingLoading ? "Confirming..." : "Confirm"}
             </button>
 
             <div className="text-xs text-gray-400 mt-3">
-              By confirming, you agree to the terms and policies. This is a demo booking.
+              By confirming, you agree to the terms and policies. This is a demo
+              booking.
             </div>
           </div>
         </aside>

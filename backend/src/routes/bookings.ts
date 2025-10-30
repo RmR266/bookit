@@ -4,7 +4,10 @@ import mongoose from 'mongoose';
 
 const router = Router();
 
-// POST /api/bookings
+/**
+ * POST /api/bookings
+ * body: { experienceId, slotIndex, name, email }
+ */
 router.post('/', async (req, res) => {
   const { experienceId, slotIndex, name, email } = req.body;
   if (!experienceId || slotIndex === undefined || !name || !email) {
@@ -25,18 +28,17 @@ router.post('/', async (req, res) => {
       throw new Error('Slot is sold out');
     }
 
-    // increment booked count atomically using session
     exp.slots[slotIndex].booked += 1;
     await exp.save({ session });
 
-    // Here you would also persist a Booking document (omitted for brevity)
     await session.commitTransaction();
     session.endSession();
 
-    res.json({ success: true, message: 'Booked successfully' });
+    res.json({ success: true, message: 'Booking confirmed', slot });
   } catch (err: any) {
     await session.abortTransaction();
     session.endSession();
+    console.error(err);
     res.status(400).json({ success: false, message: err.message });
   }
 });

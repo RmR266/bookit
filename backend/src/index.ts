@@ -1,28 +1,31 @@
+import cors from 'cors';
+import express from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
 
+import mongoose from 'mongoose';
 import authRouter from './routes/auth';
 import experiencesRouter from './routes/experiences';
 
 const app = express();
-app.use(cors());
+
+// ✅ Correct CORS setup
+app.use(cors({
+  origin: 'http://localhost:5173', // your frontend URL
+  credentials: true,
+}));
+
 app.use(express.json());
 
+// Routes
 app.use('/api/auth', authRouter);
-app.use('/api/experiences', experiencesRouter); 
+app.use('/api/experiences', experiencesRouter);
 
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bookit';
 
-mongoose.connect(MONGODB_URI)
+mongoose
+  .connect(process.env.MONGODB_URI || '')
   .then(() => {
-    console.log('MongoDB connected');
-    app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   })
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+  .catch((err) => console.error('❌ MongoDB connection error:', err));

@@ -1,35 +1,26 @@
-import React, { useState } from 'react';
+import React from "react";
+import logo from "../assets/logo.png"; // adjust path if needed
 
-export default function Navbar({ onSearch }: { onSearch: (query: string) => void }) {
-  const [search, setSearch] = useState('');
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSearch(search.trim());
-  }
-
+export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between bg-white shadow px-6 py-3 sticky top-0 z-10">
-      <div className="flex items-center gap-2">
-        <img src="/logo.png" alt="Bookit" className="h-8 w-8" />
-        <span className="text-lg font-semibold text-gray-800">Bookit</span>
+    <nav className="w-full flex items-center justify-between px-8 py-4 bg-white shadow-sm">
+      {/* Logo */}
+      <div className="flex items-center space-x-3">
+        <img src={logo} alt="Bookit Logo" className="w-12 h-12 object-contain" />
+        <h1 className="text-xl font-semibold text-gray-800">Bookit</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      {/* Search Bar */}
+      <div className="flex items-center space-x-3 w-full max-w-md">
         <input
           type="text"
           placeholder="Search experiences"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded px-3 py-1.5 w-64 focus:outline-none focus:ring focus:ring-yellow-300"
+          className="flex-1 px-4 py-2 rounded-lg bg-white/60 shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />
-        <button
-          type="submit"
-          className="bg-yellow-400 text-gray-900 font-medium px-4 py-1.5 rounded hover:bg-yellow-500"
-        >
+        <button className="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition">
           Search
         </button>
-      </form>
+      </div>
     </nav>
   );
 }

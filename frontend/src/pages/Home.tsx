@@ -7,7 +7,7 @@ interface Experience {
   title: string;
   description: string;
   price: number;
-  image: string;
+  imageUrl: string;
   location?: string;
 }
 
@@ -20,8 +20,12 @@ export default function Home() {
     async function loadExperiences() {
       try {
         const res = await api.get('/experiences');
-        setExperiences(res.data);
-        setFiltered(res.data);
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.experiences || [];
+
+        setExperiences(data);
+        setFiltered(data);
       } catch (err) {
         console.error('Failed to fetch experiences:', err);
       } finally {
@@ -57,7 +61,7 @@ export default function Home() {
                 className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden"
               >
                 <img
-                  src={exp.image}
+                  src={exp.imageUrl || 'https://via.placeholder.com/400x250'}
                   alt={exp.title}
                   className="h-48 w-full object-cover"
                 />

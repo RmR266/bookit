@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
+import localImages from "../assets/localImages";
 
 interface Experience {
   _id: string;
@@ -17,7 +18,7 @@ export default function Experiences() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Load all experiences once
+  // ✅ Fetch experiences
   useEffect(() => {
     async function loadExperiences() {
       try {
@@ -35,13 +36,13 @@ export default function Experiences() {
     loadExperiences();
   }, []);
 
-  // Get search query from URL
+  // ✅ Get search query from URL
   const searchQuery = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get("q")?.toLowerCase() || "";
   }, [location.search]);
 
-  // Filter experiences dynamically
+  // ✅ Filter experiences dynamically
   const filteredExperiences = useMemo(() => {
     if (!searchQuery) return experiences;
     return experiences.filter(
@@ -73,20 +74,27 @@ export default function Experiences() {
           </p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredExperiences.map((exp) => (
+            {filteredExperiences.map((exp, index) => (
               <div
                 key={exp._id}
                 className="border rounded-2xl bg-white shadow hover:shadow-lg transition duration-200 overflow-hidden"
               >
+                {/* ✅ Image with Unsplash + Local Fallback */}
                 <img
-                  src={exp.images?.[0] || "https://via.placeholder.com/400x250"}
+                  src={
+                    exp.images?.[0] ||
+                    localImages[index % localImages.length] ||
+                    "https://via.placeholder.com/400x250"
+                  }
                   alt={exp.title}
                   className="h-48 w-full object-cover block"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
+                      localImages[index % localImages.length] ||
                       "https://via.placeholder.com/400x250";
                   }}
                 />
+
                 <div className="p-4 flex flex-col justify-between h-40">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-800">

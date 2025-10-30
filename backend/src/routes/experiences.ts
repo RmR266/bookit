@@ -177,7 +177,7 @@ const dummyExperiences = [
     price: 5500,
     location: 'Jaipur',
     images: [
-      'https://images.unsplash.com/photo-1533055640609-24b498dfd00e?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?auto=format&fit=crop&w=1200&q=80',
     ],
     slots: [
       {
@@ -262,7 +262,7 @@ const dummyExperiences = [
     price: 4800,
     location: 'Gulmarg',
     images: [
-      'https://images.unsplash.com/photo-1602078753128-43c812ad2b0d?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=80',
     ],
     slots: [
       {
@@ -319,7 +319,7 @@ const dummyExperiences = [
     price: 2500,
     location: 'Chennai',
     images: [
-      'https://images.unsplash.com/photo-1533777324565-a040eb52fac1?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=1200&q=80',
     ],
     slots: [
       {

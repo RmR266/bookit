@@ -1,25 +1,65 @@
 import express, { Request, Response } from "express";
 import Booking from "../models/booking";
+import Experience from "../models/Experience";
 
 const router = express.Router();
 
 /**
  * @route   POST /api/bookings
- * @desc    Create a new booking entry
- * @access  Public (you can later protect it with auth middleware if needed)
+ * @desc    Create a new booking entry and prevent double-booking
+ * @access  Public
  */
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const bookingData = req.body;
+    const { name, email, refId, experienceId, date, time, qty = 1 } = req.body;
 
-    if (!bookingData.name || !bookingData.email || !bookingData.refId) {
+    // ✅ Basic field validation
+    if (!name || !email || !refId || !experienceId || !date || !time) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const booking = await Booking.create(bookingData);
+    // ✅ Find the experience
+    const experience = await Experience.findById(experienceId);
+    if (!experience) {
+      return res.status(404).json({ message: "Experience not found" });
+    }
+
+    // ✅ Find matching slot
+    const slot = experience.slots.find((s) => s.date === date && s.time === time);
+    if (!slot) {
+      return res.status(400).json({ message: "Invalid slot selected" });
+    }
+
+    // ✅ Check if slot has capacity left
+    const remaining = slot.capacity - slot.booked;
+    if (remaining < qty) {
+      return res.status(400).json({ message: "Slot is full or insufficient capacity" });
+    }
+
+    // ✅ Prevent duplicate booking for same user + slot
+    const existingBooking = await Booking.findOne({ email, experienceId, date, time });
+    if (existingBooking) {
+      return res.status(400).json({ message: "You have already booked this slot" });
+    }
+
+    // ✅ Create the booking
+    const booking = await Booking.create({
+      name,
+      email,
+      refId,
+      experienceId,
+      date,
+      time,
+      qty,
+    });
+
+    // ✅ Update booked count in the Experience slot
+    slot.booked += qty;
+    await experience.save();
+
     res.status(201).json({
       success: true,
-      message: "Booking created successfully",
+      message: "Booking confirmed successfully",
       booking,
     });
   } catch (error) {

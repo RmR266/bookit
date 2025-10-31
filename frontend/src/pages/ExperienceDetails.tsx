@@ -77,36 +77,55 @@ export default function ExperienceDetails() {
   }
 
   // Booking now calls API signature: createBooking(experienceId: string, slot: string)
-  async function handleConfirm() {
-    setMessage('');
+ async function handleConfirm() {
+  setMessage('');
 
-    if (selectedSlotIndex === null || !exp || !selectedDate) {
-      setMessage('Please select a date and time slot.');
-      return;
-    }
-
-    const selectedSlot = exp.slots[selectedSlotIndex];
-    if (!selectedSlot) {
-      setMessage('Invalid slot selected.');
-      return;
-    }
-
-    setBookingLoading(true);
-    try {
-      // Convert slot object to a string because backend/api expects slot as string
-      const slotString = `${selectedSlot.date} ${selectedSlot.time}`;
-      const res = await createBooking(exp._id, slotString);
-
-      setMessage(res?.message || 'Booking confirmed!');
-      // navigate to checkout or next step
-      navigate('/checkout');
-    } catch (err: any) {
-      setMessage(err?.response?.data?.message || err?.message || 'Booking failed.');
-      console.error('Booking error:', err);
-    } finally {
-      setBookingLoading(false);
-    }
+  if (selectedSlotIndex === null || !exp || !selectedDate) {
+    setMessage('Please select a date and time slot.');
+    return;
   }
+
+  const selectedSlot = exp.slots[selectedSlotIndex];
+  if (!selectedSlot) {
+    setMessage('Invalid slot selected.');
+    return;
+  }
+
+  setBookingLoading(true);
+  try {
+    // Generate a simple unique refId
+    const refId = 'REF' + Date.now();
+
+    const bookingData = {
+      name: 'Guest User', // Replace with user input later
+      email: 'guest@example.com', // Replace when auth is added
+      refId,
+      experienceId: exp._id,
+      date: selectedSlot.date,
+      time: selectedSlot.time,
+      qty: quantity,
+    };
+
+    const res = await createBooking(bookingData);
+
+    setMessage(res?.message || 'Booking confirmed!');
+    // Navigate to checkout and pass booking data
+    navigate('/checkout', {
+      state: {
+        experience: exp,
+        date: selectedSlot.date,
+        time: selectedSlot.time,
+        qty: quantity,
+        refId,
+      },
+    });
+  } catch (err: any) {
+    setMessage(err?.response?.data?.message || err?.message || 'Booking failed.');
+    console.error('Booking error:', err);
+  } finally {
+    setBookingLoading(false);
+  }
+}
 
   if (loading) return <div className="p-6 text-center">Loading experience...</div>;
   if (!exp) return <div className="p-6 text-center">Experience not found.</div>;
@@ -116,16 +135,18 @@ export default function ExperienceDetails() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Experience Details */}
         <div className="lg:col-span-2">
-          {/* Back Button - not absolute so it scrolls with page */}
-          <button
-            onClick={() => navigate('/')}
-            className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-gray-200 text-gray-700 hover:text-black hover:shadow-md hover:scale-105 transition-all duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-medium text-sm">Back to Home</span>
-          </button>
+          {/* Back Button - made sticky so it remains visible while scrolling */}
+          <div className="sticky top-6 z-20">
+            <button
+              onClick={() => navigate('/')}
+              className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-gray-200 text-gray-700 hover:text-black hover:shadow-md hover:scale-105 transition-all duration-200"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="font-medium text-sm">Back to Home</span>
+            </button>
+          </div>
 
-          {/* Main Image - bigger */}
+          {/* Main Image - keep exact size you provided */}
           {exp.images?.[0] && (
             <img
               src={exp.images[0]}
@@ -161,7 +182,7 @@ export default function ExperienceDetails() {
                     className={`px-4 py-2 rounded-md border text-sm font-medium transition-all
                       ${
                         isActive
-                          ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
+                          ? 'bg-yellow-400 border-yellow-400 text-yellow-800'
                           : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                       }`}
                   >
@@ -190,7 +211,7 @@ export default function ExperienceDetails() {
                         soldOut
                           ? 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed'
                           : isSelected
-                          ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
+                          ? 'bg-yellow-200 border-yellow-400 text-yellow-800'
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                   >
@@ -223,9 +244,9 @@ export default function ExperienceDetails() {
           {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
         </div>
 
-        {/* Right: Summary Card (NOT sticky) */}
+        {/* Right: Summary Card (make sticky so it stays visible on scroll) */}
         <aside className="lg:col-span-1">
-          <div className="bg-white border rounded-xl p-5 shadow-sm">
+          <div className="sticky top-24 bg-white border rounded-xl p-5 shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm text-gray-500">Starts at</div>
               <div className="text-lg font-semibold">₹{exp.price}</div>

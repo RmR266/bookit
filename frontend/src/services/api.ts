@@ -47,8 +47,16 @@ export async function getExperienceById(id: string) {
 // =========================
 // BOOKINGS REQUESTS
 // =========================
-export async function createBooking(experienceId: string, slot: string) {
-  const res = await api.post("/bookings", { experienceId, slot });
+export async function createBooking(data: {
+  name: string;
+  email: string;
+  refId: string;
+  experienceId: string;
+  date: string;
+  time: string;
+  qty: number;
+}) {
+  const res = await api.post("/bookings", data);
   return res.data;
 }
 

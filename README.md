@@ -9,47 +9,10 @@ Backend (Railway): https://bookit-production-e0a1.up.railway.app/
 
 Features
 1.Frontend
-ChatGPT said:The Bookit web app allows users to seamlessly browse and view travel experiences with fully dynamic data, exploring each experience’s available date and time slots in real time. It intelligently prevents users from booking slots that are already full or duplicate entries for the same experience. Users can apply promo codes like SAVE10 or FLAT100 to unlock instant discounts, with automatic price recalculation that includes taxes and applied discounts. The checkout process features a clean, validated form requiring essential details such as name, email, and acceptance of terms before completing the booking. Once confirmed, users receive a booking confirmation screen displaying a unique Reference ID for their reservation. The entire interface is designed with a responsive UI, ensuring a smooth and optimized experience across both desktop and mobile devices.
+The Bookit web app allows users to seamlessly browse and view travel experiences with fully dynamic data, exploring each experience’s available date and time slots in real time. It intelligently prevents users from booking slots that are already full or duplicate entries for the same experience. Users can apply promo codes like SAVE10 or FLAT100 to unlock instant discounts, with automatic price recalculation that includes taxes and applied discounts. The checkout process features a clean, validated form requiring essential details such as name, email, and acceptance of terms before completing the booking. Once confirmed, users receive a booking confirmation screen displaying a unique Reference ID for their reservation. The entire interface is designed with a responsive UI, ensuring a smooth and optimized experience across both desktop and mobile devices.
 
 2.Backend
-RESTful API endpoints for:
-a.Experiences (/api/experiences)
-b.Bookings (/api/bookings)
-c.Promo codes (/api/promo)
-MongoDB persistence with seeding
-Prevent double-booking for same slot
-Auto update of slot capacity after booking
-Comprehensive error handling
-
-Project Strucutre 
-Frontend
-
-src/
- ├─ components/
- │   └─ Navbar.tsx
- ├─ pages/
- │   ├─ Home.tsx
- │   ├─ Experiences.tsx
- │   ├─ ExperienceDetails.tsx
- │   ├─ Checkout.tsx
- │   ├─ Confirmation.tsx
- ├─ services/
- │   └─ api.ts
- ├─ App.tsx
- └─ main.tsx
-
-
-Backend
-
-src/
- ├─ index.ts
- ├─ models/
- │   ├─ Experience.ts
- │   └─ bookingModel.ts
- ├─ routes/
- │   ├─ experiences.ts
- │   ├─ bookings.ts
- │   └─ promo.ts
+The Bookit backend is powered by a robust RESTful API architecture, providing dedicated endpoints for managing experiences (/api/experiences), handling bookings (/api/bookings), and validating promo codes (/api/promo). It uses MongoDB for reliable data persistence, complete with automatic data seeding to initialize sample experiences. The backend ensures booking integrity by preventing double-booking for the same slot and automatically updating slot capacity after each confirmed reservation. Additionally, it features comprehensive error handling, ensuring that all API operations are stable, secure, and user-friendly even under unexpected conditions.
 
 
 Setup & Run Locally

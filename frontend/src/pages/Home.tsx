@@ -18,7 +18,7 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔹 Load all experiences once
+  //  Load all experiences once
   useEffect(() => {
     async function loadExperiences() {
       try {
@@ -37,7 +37,7 @@ export default function Home() {
     loadExperiences();
   }, []);
 
-  // 🔹 Watch for search query in URL
+  //  Watch for search query in URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get("q")?.toLowerCase() || "";

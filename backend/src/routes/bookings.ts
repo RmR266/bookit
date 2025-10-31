@@ -4,45 +4,40 @@ import Experience from "../models/Experience";
 
 const router = express.Router();
 
-/**
- * @route   POST /api/bookings
- * @desc    Create a new booking entry and prevent double-booking
- * @access  Public
- */
 router.post("/", async (req: Request, res: Response) => {
   try {
     const { name, email, refId, experienceId, date, time, qty = 1 } = req.body;
 
-    // ✅ Basic field validation
+    // Basic field validation
     if (!name || !email || !refId || !experienceId || !date || !time) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // ✅ Find the experience
+    // finding the exp
     const experience = await Experience.findById(experienceId);
     if (!experience) {
       return res.status(404).json({ message: "Experience not found" });
     }
 
-    // ✅ Find matching slot
+    // looking for matching slot
     const slot = experience.slots.find((s) => s.date === date && s.time === time);
     if (!slot) {
       return res.status(400).json({ message: "Invalid slot selected" });
     }
 
-    // ✅ Check if slot has capacity left
+    // checking if slot has empty space 
     const remaining = slot.capacity - slot.booked;
     if (remaining < qty) {
       return res.status(400).json({ message: "Slot is full or insufficient capacity" });
     }
 
-    // ✅ Prevent duplicate booking for same user + slot
+    // preventing duplicate booking for the same user at the same slot
     const existingBooking = await Booking.findOne({ email, experienceId, date, time });
     if (existingBooking) {
       return res.status(400).json({ message: "You have already booked this slot" });
     }
 
-    // ✅ Create the booking
+    // creating booking on MongoDB
     const booking = await Booking.create({
   name,
   email,
@@ -57,7 +52,7 @@ router.post("/", async (req: Request, res: Response) => {
   total: req.body.total,
 });
 
-    // ✅ Update booked count in the Experience slot
+    // Incrase book count 
     slot.booked += qty;
     await experience.save();
 
@@ -75,10 +70,6 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * @route   GET /api/bookings
- * @desc    Get all bookings (for admin/debugging)
- */
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
@@ -89,10 +80,6 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
-/**
- * @route   GET /api/bookings/:refId
- * @desc    Get a single booking by its Ref ID
- */
 router.get("/:refId", async (req: Request, res: Response) => {
   try {
     const { refId } = req.params;

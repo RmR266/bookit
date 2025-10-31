@@ -30,7 +30,7 @@ export default function Checkout() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // 🆕 Modal state
+  //  Modal state
   const [showPromos, setShowPromos] = useState(false);
 
   // Redirect if accessed directly
@@ -42,13 +42,13 @@ export default function Checkout() {
 
   if (!bookingData) return null;
 
-  // 💰 Price Calculations
+  //  Price Calculations
   const TAX_RATE = 0.06;
   const subtotal = bookingData.experience.price * bookingData.qty;
   const taxes = Math.round(subtotal * TAX_RATE);
   const total = Math.round(subtotal + taxes - discount);
 
-  // ✅ Regex validation
+  //  Regex validation
   const nameRegex = /^[A-Za-z\s]{3,}$/; // letters & spaces, at least 3 chars
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,7 +57,7 @@ export default function Checkout() {
 
   const canPay = useMemo(() => isNameValid && isEmailValid && agree, [isNameValid, isEmailValid, agree]);
 
-  // 🏷️ Apply promo
+  // Apply promo
   async function handleApplyPromo() {
     setError('');
     setSuccessMsg('');
@@ -78,7 +78,7 @@ export default function Checkout() {
     }
   }
 
-  // 💳 Pay & Confirm
+  //  Pay & Confirm
   async function handlePayAndConfirm() {
     setError('');
     if (!canPay) {
@@ -94,7 +94,7 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // create a payload (don't shadow bookingData)
+      // create a payload 
       const payload = {
         name: fullName,
         email,
@@ -127,7 +127,7 @@ export default function Checkout() {
     }
   }
 
-  // 🧾 Available promos (for modal)
+  //  Available promos 
   const availablePromos = [
     { code: 'SAVE10', desc: 'Get 10% off your booking!' },
     { code: 'FLAT100', desc: 'Flat ₹100 off on any experience!' },
@@ -135,7 +135,6 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
-      {/* --- Back button placed above the grid — matches your first screenshot --- */}
       <div className="max-w-6xl mx-auto mb-6">
         <button
           onClick={() => navigate(`/experiences/${bookingData.experience._id}`)}
@@ -149,7 +148,7 @@ export default function Checkout() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left form */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          {/* (Back button removed from inside the card to avoid duplication) */}
+          
 
           {/* Form fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -207,7 +206,7 @@ export default function Checkout() {
             </button>
           </div>
 
-          {/* 💡 View available promos */}
+          {/* View available promos */}
           <button
             onClick={() => setShowPromos(true)}
             className="text-sm text-blue-600 underline mb-4 hover:text-blue-800"
@@ -288,7 +287,7 @@ export default function Checkout() {
         </aside>
       </div>
 
-      {/* 🪟 Promo Modal */}
+      {/*  Promo Modal */}
       {showPromos && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-80">

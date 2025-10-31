@@ -83,7 +83,7 @@ export default function ExperienceDetails() {
     .join('');
 };
 
-  // Booking now calls API signature: createBooking(experienceId: string, slot: string)
+  
 async function handleConfirm() {
   setMessage('');
 
@@ -120,7 +120,7 @@ async function handleConfirm() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Experience Details */}
         <div className="lg:col-span-2">
-          {/* Back Button - made sticky so it remains visible while scrolling */}
+          {/* Back Button  */}
           <div className="sticky top-6 z-20">
             <button
               onClick={() => navigate('/')}
@@ -131,7 +131,7 @@ async function handleConfirm() {
             </button>
           </div>
 
-          {/* Main Image - keep exact size you provided */}
+          {/* Main Image */}
           {exp.images?.[0] && (
             <img
               src={exp.images[0]}
@@ -217,7 +217,7 @@ async function handleConfirm() {
             </div>
           </div>
 
-          {/* About Section - rounded and slightly transparent */}
+          {/* About Section */}
           <div className="mt-8">
             <h3 className="font-semibold mb-2">About</h3>
             <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl border border-gray-200 text-sm text-gray-600 shadow-sm">
@@ -229,7 +229,7 @@ async function handleConfirm() {
           {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
         </div>
 
-        {/* Right: Summary Card (make sticky so it stays visible on scroll) */}
+        {/* Right: Summary Card  */}
         <aside className="lg:col-span-1">
           <div className="sticky top-24 bg-white border rounded-xl p-5 shadow-sm">
             <div className="flex justify-between items-center mb-4">

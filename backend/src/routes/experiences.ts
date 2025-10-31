@@ -226,7 +226,7 @@ const dummyExperiences = [
 ];
 
 
-// 🧩 Seed MongoDB if no experiences exist
+// if no exp , then seeding the dummydata on MongoDB
 async function seedExperiences() {
   try {
     const count = await Experience.countDocuments();
@@ -254,7 +254,7 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
-// ✅ GET single experience by ID
+// fetching single exp
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const experience = await Experience.findById(req.params.id);
@@ -269,4 +269,4 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 export default router;
-export { dummyExperiences }; // 👈 exported for index.ts seeding use
+export { dummyExperiences }; // exporting dummydata for seeding 

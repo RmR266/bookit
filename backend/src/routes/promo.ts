@@ -8,14 +8,14 @@ const promos: Record<string, Promo> = {
 };
 
 router.post('/validate', (req, res) => {
-  const { code, subtotal } = req.body; // 👈 also send subtotal from frontend
+  const { code, subtotal } = req.body; 
   if (!code) return res.status(400).json({ valid: false });
 
   const upper = String(code).toUpperCase();
   const promo = promos[upper];
   if (!promo) return res.json({ valid: false });
 
-  // 💰 Calculate discount
+  // calculation of discount
   let discountAmount = 0;
   if (promo.type === 'percent' && subtotal) {
     discountAmount = Math.round((subtotal * promo.value) / 100);

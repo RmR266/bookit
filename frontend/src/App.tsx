@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Experiences from './pages/Experiences';
 import ExperienceDetails from './pages/ExperienceDetails';
 import Checkout from './pages/Checkout';
-import Confirmation from './pages/Confirmation'; // ✅ added
+import Confirmation from './pages/Confirmation'; 
 import Navbar from './components/Navbar';
 
 export default function App() {
@@ -17,7 +17,7 @@ export default function App() {
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/experiences/:id" element={<ExperienceDetails />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/confirmation" element={<Confirmation />} /> {/* ✅ Added */}
+          <Route path="/confirmation" element={<Confirmation />} /> 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

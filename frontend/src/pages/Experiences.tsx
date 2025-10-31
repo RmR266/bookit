@@ -18,7 +18,7 @@ export default function Experiences() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Fetch experiences
+  //  Fetch experiences
   useEffect(() => {
     async function loadExperiences() {
       try {
@@ -36,13 +36,13 @@ export default function Experiences() {
     loadExperiences();
   }, []);
 
-  // ✅ Get search query from URL
+  //  Get search query from URL
   const searchQuery = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get("q")?.toLowerCase() || "";
   }, [location.search]);
 
-  // ✅ Filter experiences dynamically
+  //  Filter experiences dynamically
   const filteredExperiences = useMemo(() => {
     if (!searchQuery) return experiences;
     return experiences.filter(
@@ -79,7 +79,7 @@ export default function Experiences() {
                 key={exp._id}
                 className="border rounded-2xl bg-white shadow hover:shadow-lg transition duration-200 overflow-hidden"
               >
-                {/* ✅ Image with Unsplash + Local Fallback */}
+                {/* Image with Unsplash + Local Fallback */}
                 <img
                   src={
                     exp.images?.[0] ||

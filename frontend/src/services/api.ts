@@ -18,18 +18,8 @@ api.interceptors.response.use(
 
 export default api;
 
-// =========================
-// AUTH REQUESTS
-// =========================
-export async function signup(name: string, email: string, password: string) {
-  const res = await api.post("/auth/signup", { name, email, password });
-  return res.data;
-}
 
-export async function login(email: string, password: string) {
-  const res = await api.post("/auth/login", { email, password });
-  return res.data;
-}
+
 
 // =========================
 // EXPERIENCES REQUESTS
@@ -44,9 +34,7 @@ export async function getExperienceById(id: string) {
   return res.data.experience; // ✅ fixed to return the actual object
 }
 
-// =========================
 // BOOKINGS REQUESTS
-// =========================
 export async function createBooking(data: {
   name: string;
   email: string;
@@ -65,9 +53,8 @@ export async function getUserBookings() {
   return res.data.bookings;
 }
 
-// =========================
+
 // PROMO REQUESTS
-// =========================
 export async function applyPromo(code: string, subtotal?: number) {
   const { data } = await api.post('/promo/validate', { code, subtotal });
   return data;

@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-import authRouter from './routes/auth';
 import experiencesRouter, { dummyExperiences } from './routes/experiences';
 import bookingRouter from "./routes/bookings";
 import promoRouter from "./routes/promo"; // 🆕 Add this line
@@ -21,7 +20,6 @@ app.use(cors({
 app.use(express.json());
 
 // ✅ Routes
-app.use('/api/auth', authRouter);
 app.use('/api/experiences', experiencesRouter);
 app.use('/api/bookings', bookingRouter);
 app.use('/api/promo', promoRouter); // 🆕 Register promo routes

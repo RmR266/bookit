@@ -98,47 +98,18 @@ async function handleConfirm() {
     return;
   }
 
-  setBookingLoading(true);
-  try {
-    const refId = generateRefId(); // ✅ clean ID generator
-    const name = 'Guest User';
-    const email = 'guest@example.com';
+  const refId = generateRefId();
 
-    const bookingData = {
-      name,
-      email,
-      refId,
-      experienceId: exp._id,
+  navigate('/checkout', {
+    state: {
+      experience: exp,
       date: selectedSlot.date,
       time: selectedSlot.time,
       qty: quantity,
-    };
-
-    const res = await createBooking(bookingData);
-
-    if (res?.success) {
-      navigate('/checkout', {
-        state: {
-          experience: exp,
-          date: selectedSlot.date,
-          time: selectedSlot.time,
-          qty: quantity,
-          refId,
-          name,
-          email,
-        },
-      });
-    } else {
-      setMessage(res?.message || 'Failed to create booking.');
-    }
-  } catch (err: any) {
-    console.error('Booking error:', err);
-    setMessage(err?.response?.data?.message || 'Booking failed.');
-  } finally {
-    setBookingLoading(false);
-  }
+      refId,
+    },
+  });
 }
-
 
 
   if (loading) return <div className="p-6 text-center">Loading experience...</div>;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { applyPromo } from '../services/api';
+import { ArrowLeft } from 'lucide-react';
+import { applyPromo, createBooking } from '../services/api';
 
 interface CheckoutState {
   experience: {
@@ -11,6 +12,7 @@ interface CheckoutState {
   date: string;
   time: string;
   qty: number;
+  refId?: string; // optional in case older flows don't include it
 }
 
 export default function Checkout() {
@@ -77,24 +79,52 @@ export default function Checkout() {
   }
 
   // 💳 Pay & Confirm
-  function handlePayAndConfirm() {
+  async function handlePayAndConfirm() {
     setError('');
     if (!canPay) {
       setError('Please fill valid details and accept terms.');
       return;
     }
 
+    if (!bookingData) {
+      setError('Booking data missing.');
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      navigate('/confirmation', {
-        state: {
-          ...bookingData,
-          fullName,
-          email,
-          total,
-        },
-      });
-    }, 1200);
+
+    try {
+      // create a payload (don't shadow bookingData)
+      const payload = {
+        name: fullName,
+        email,
+        promo: promoApplied ? promo : '',
+        experienceId: bookingData.experience._id,
+        date: bookingData.date,
+        time: bookingData.time,
+        qty: bookingData.qty,
+        subtotal,
+        taxes,
+        total,
+        refId: bookingData.refId || `REF${Date.now()}`, // fallback refId if not passed
+      };
+
+      const res = await createBooking(payload);
+
+      if (res && res.success) {
+        // navigate to confirmation with refId
+        navigate('/confirmation', {
+          state: { refId: payload.refId },
+        });
+      } else {
+        setError(res?.message || 'Booking failed.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError('Error completing booking.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 🧾 Available promos (for modal)
@@ -105,10 +135,21 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
+      {/* --- Back button placed above the grid — matches your first screenshot --- */}
+      <div className="max-w-6xl mx-auto mb-6">
+        <button
+          onClick={() => navigate(`/experiences/${bookingData.experience._id}`)}
+          className="flex items-center gap-2 text-gray-700 hover:text-black"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-base font-medium">Checkout</span>
+        </button>
+      </div>
+
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left form */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">Checkout</h2>
+          {/* (Back button removed from inside the card to avoid duplication) */}
 
           {/* Form fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">

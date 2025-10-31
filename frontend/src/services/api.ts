@@ -68,7 +68,8 @@ export async function getUserBookings() {
 // =========================
 // PROMO REQUESTS
 // =========================
-export async function applyPromo(code: string) {
-  const res = await api.post("/promo/apply", { code });
-  return res.data;
+export async function applyPromo(code: string, subtotal?: number) {
+  const { data } = await api.post('/promo/validate', { code, subtotal });
+  return data;
 }
+

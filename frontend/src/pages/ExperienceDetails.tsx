@@ -76,8 +76,15 @@ export default function ExperienceDetails() {
     setQuantity((q) => Math.max(q - 1, 1));
   }
 
+  const generateRefId = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({ length: 8 })
+    .map(() => chars[Math.floor(Math.random() * chars.length)])
+    .join('');
+};
+
   // Booking now calls API signature: createBooking(experienceId: string, slot: string)
- async function handleConfirm() {
+async function handleConfirm() {
   setMessage('');
 
   if (selectedSlotIndex === null || !exp || !selectedDate) {
@@ -93,12 +100,13 @@ export default function ExperienceDetails() {
 
   setBookingLoading(true);
   try {
-    // Generate a simple unique refId
-    const refId = 'REF' + Date.now();
+    const refId = generateRefId(); // ✅ clean ID generator
+    const name = 'Guest User';
+    const email = 'guest@example.com';
 
     const bookingData = {
-      name: 'Guest User', // Replace with user input later
-      email: 'guest@example.com', // Replace when auth is added
+      name,
+      email,
       refId,
       experienceId: exp._id,
       date: selectedSlot.date,
@@ -108,24 +116,30 @@ export default function ExperienceDetails() {
 
     const res = await createBooking(bookingData);
 
-    setMessage(res?.message || 'Booking confirmed!');
-    // Navigate to checkout and pass booking data
-    navigate('/checkout', {
-      state: {
-        experience: exp,
-        date: selectedSlot.date,
-        time: selectedSlot.time,
-        qty: quantity,
-        refId,
-      },
-    });
+    if (res?.success) {
+      navigate('/checkout', {
+        state: {
+          experience: exp,
+          date: selectedSlot.date,
+          time: selectedSlot.time,
+          qty: quantity,
+          refId,
+          name,
+          email,
+        },
+      });
+    } else {
+      setMessage(res?.message || 'Failed to create booking.');
+    }
   } catch (err: any) {
-    setMessage(err?.response?.data?.message || err?.message || 'Booking failed.');
     console.error('Booking error:', err);
+    setMessage(err?.response?.data?.message || 'Booking failed.');
   } finally {
     setBookingLoading(false);
   }
 }
+
+
 
   if (loading) return <div className="p-6 text-center">Loading experience...</div>;
   if (!exp) return <div className="p-6 text-center">Experience not found.</div>;

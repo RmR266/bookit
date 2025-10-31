@@ -44,14 +44,18 @@ router.post("/", async (req: Request, res: Response) => {
 
     // ✅ Create the booking
     const booking = await Booking.create({
-      name,
-      email,
-      refId,
-      experienceId,
-      date,
-      time,
-      qty,
-    });
+  name,
+  email,
+  refId,
+  experienceId,
+  date,
+  time,
+  qty,
+  promo: req.body.promo,
+  subtotal: req.body.subtotal,
+  taxes: req.body.taxes,
+  total: req.body.total,
+});
 
     // ✅ Update booked count in the Experience slot
     slot.booked += qty;

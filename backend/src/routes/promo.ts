@@ -8,14 +8,26 @@ const promos: Record<string, Promo> = {
 };
 
 router.post('/validate', (req, res) => {
-  const { code } = req.body;
+  const { code, subtotal } = req.body; // 👈 also send subtotal from frontend
   if (!code) return res.status(400).json({ valid: false });
 
   const upper = String(code).toUpperCase();
-  const promo = promos[upper]; // ✅ no TypeScript error now
-
+  const promo = promos[upper];
   if (!promo) return res.json({ valid: false });
-  return res.json({ valid: true, promo });
+
+  // 💰 Calculate discount
+  let discountAmount = 0;
+  if (promo.type === 'percent' && subtotal) {
+    discountAmount = Math.round((subtotal * promo.value) / 100);
+  } else if (promo.type === 'flat') {
+    discountAmount = promo.value;
+  }
+
+  return res.json({
+    valid: true,
+    promo,
+    discountAmount,
+  });
 });
 
 export default router;

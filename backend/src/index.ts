@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import authRouter from './routes/auth';
 import experiencesRouter, { dummyExperiences } from './routes/experiences';
 import bookingRouter from "./routes/bookings";
+import promoRouter from "./routes/promo"; // 🆕 Add this line
 import Experience from './models/Experience';
 
 const app = express();
@@ -19,13 +20,15 @@ app.use(cors({
 
 app.use(express.json());
 
-// Routes
+// ✅ Routes
 app.use('/api/auth', authRouter);
 app.use('/api/experiences', experiencesRouter);
-app.use("/api/bookings", bookingRouter);
+app.use('/api/bookings', bookingRouter);
+app.use('/api/promo', promoRouter); // 🆕 Register promo routes
 
 const PORT = process.env.PORT || 5000;
 
+// 🌱 Seeding dummy data if collection is empty
 async function seedExperiences() {
   try {
     const count = await Experience.countDocuments();
@@ -41,11 +44,12 @@ async function seedExperiences() {
   }
 }
 
+// 🚀 Connect MongoDB & start server
 mongoose
   .connect(process.env.MONGODB_URI || '')
   .then(async () => {
     console.log('✅ MongoDB connected successfully');
-    await seedExperiences(); // 🌱 run seeding only after DB connects
+    await seedExperiences();
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
   .catch((err) => console.error('❌ MongoDB connection error:', err));

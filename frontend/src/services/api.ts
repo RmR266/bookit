@@ -1,63 +1,66 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
-// Automatically attach JWT token if stored
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    // ensure headers object exists
-    if (!config.headers) config.headers = {};
-    config.headers.Authorization = `Bearer ${token}`;
+// ✅ Centralized error logging
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API error:", error.response?.data || error.message);
+    throw error;
   }
-  return config;
-});
-
-// ---------- AUTH ----------
-export const signup = (data: { name: string; email: string; password: string }) =>
-  api.post('/auth/signup', data);
-
-export const login = (data: { email: string; password: string }) =>
-  api.post('/auth/login', data);
-
-export const getProfile = () => api.get('/auth/me');
-
-// ---------- EXPERIENCES ----------
-// normalize responses so frontend can rely on consistent return shapes
-export const getExperiences = async () => {
-  const res = await api.get('/experiences');
-  // backend returns { experiences: [...] } — return the array
-  if (Array.isArray(res.data)) return res.data;
-  return res.data.experiences || [];
-};
-
-export const getExperienceById = async (id: string) => {
-  const res = await api.get(`/experiences/${id}`);
-  // backend returns { experience: {...} }
-  return res.data.experience || res.data;
-};
-
-// ---------- BOOKINGS ----------
-export const createBooking = async (data: {
-  name: string;
-  email: string;
-  promo: string;
-  experience: string;
-  date: string;
-  time: string;
-  qty: number;
-  subtotal: number;
-  taxes: number;
-  total: number;
-  refId: string;
-}) => {
-  const res = await api.post('/bookings', data);
-  return res.data;
-};
+);
 
 export default api;
+
+// =========================
+// AUTH REQUESTS
+// =========================
+export async function signup(name: string, email: string, password: string) {
+  const res = await api.post("/auth/signup", { name, email, password });
+  return res.data;
+}
+
+export async function login(email: string, password: string) {
+  const res = await api.post("/auth/login", { email, password });
+  return res.data;
+}
+
+// =========================
+// EXPERIENCES REQUESTS
+// =========================
+export async function getAllExperiences() {
+  const res = await api.get("/experiences");
+  return res.data.experiences; // ✅ consistent with backend structure
+}
+
+export async function getExperienceById(id: string) {
+  const res = await api.get(`/experiences/${id}`);
+  return res.data.experience; // ✅ fixed to return the actual object
+}
+
+// =========================
+// BOOKINGS REQUESTS
+// =========================
+export async function createBooking(experienceId: string, slot: string) {
+  const res = await api.post("/bookings", { experienceId, slot });
+  return res.data;
+}
+
+export async function getUserBookings() {
+  const res = await api.get("/bookings");
+  return res.data.bookings;
+}
+
+// =========================
+// PROMO REQUESTS
+// =========================
+export async function applyPromo(code: string) {
+  const res = await api.post("/promo/apply", { code });
+  return res.data;
+}

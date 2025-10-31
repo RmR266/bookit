@@ -242,10 +242,8 @@ async function seedExperiences() {
   }
 }
 
-// Trigger seeding once when router is initialized
-seedExperiences();
 
-// ✅ GET all experiences
+
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const experiences = await Experience.find();
@@ -271,3 +269,4 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 export default router;
+export { dummyExperiences }; // 👈 exported for index.ts seeding use

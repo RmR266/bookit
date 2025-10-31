@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Experiences from './pages/Experiences';
 import ExperienceDetails from './pages/ExperienceDetails';
-import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 
 export default function App() {

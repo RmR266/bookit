@@ -24,7 +24,7 @@ cd backend
 npm install
 
 Create a .env file inside /backend with >>>>>>>
-PORT=5000
+PORT=5000 and 
 MONGODB_URI=mongodb+srv://rmrisbitw_db_user:mxoi32nxsPTqUHBw@bookit.dafmsde.mongodb.net/?appName=Bookit
 
 To run backend >>>>>>

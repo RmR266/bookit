@@ -15,29 +15,29 @@ The Bookit web app allows users to seamlessly browse and view travel experiences
 The Bookit backend is powered by a robust RESTful API architecture, providing dedicated endpoints for managing experiences (/api/experiences), handling bookings (/api/bookings), and validating promo codes (/api/promo). It uses MongoDB for reliable data persistence, complete with automatic data seeding to initialize sample experiences. The backend ensures booking integrity by preventing double-booking for the same slot and automatically updating slot capacity after each confirmed reservation. Additionally, it features comprehensive error handling, ensuring that all API operations are stable, secure, and user-friendly even under unexpected conditions.
 
 
-Setup & Run Locally
+Setup & Run Locally >>>>>>
 git clone 
 cd bookit
 
-Backend Setup
+Backend Setup >>>>>
 cd backend
 npm install
 
-Create a .env file inside /backend with:
+Create a .env file inside /backend with >>>>>>>
 PORT=5000
 MONGODB_URI=mongodb+srv://rmrisbitw_db_user:mxoi32nxsPTqUHBw@bookit.dafmsde.mongodb.net/?appName=Bookit
 
-To run backend
+To run backend >>>>>>
 npm run dev
 
-Frontend Setup
+Frontend Setup >>>>>>>
 cd frontend
 npm install
 
-Create a .env file inside /frontend with:
+Create a .env file inside /frontend with: >>>>>>>
 VITE_API_URL=http://localhost:5000/api
 
-Then run 
+Then run  >>>>>>
 npm run dev
 
 

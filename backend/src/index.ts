@@ -1,5 +1,5 @@
 import cors from 'cors';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import experiencesRouter, { dummyExperiences } from './routes/experiences';
@@ -11,52 +11,44 @@ dotenv.config();
 
 const app = express();
 
-// --- CORS Setup ---
 app.use(cors({
   origin: [
-    'http://localhost:5173',                       // for local dev
-    'https://bookit-frontend.onrender.com',        // for deployed frontend
+    'http://localhost:5173',
+    'https://bookit-frontend.onrender.com',
   ],
   credentials: true,
 }));
 
-// --- Middleware ---
 app.use(express.json());
 
-// --- Routes ---
 app.use('/api/experiences', experiencesRouter);
 app.use('/api/bookings', bookingRouter);
 app.use('/api/promo', promoRouter);
 
 const PORT = process.env.PORT || 10000;
 
-// --- Seed Dummy Data if Empty ---
-async function seedExperiences() {
+async function seedExperiences(): Promise<void> {
   try {
     const count = await Experience.countDocuments();
     if (count === 0) {
-      console.log('🌱 Seeding dummy experiences into MongoDB...');
+      console.log('🌱 Seeding dummy experiences...');
       await Experience.insertMany(dummyExperiences);
       console.log('✅ Seeding complete!');
-    } else {
-      console.log(`✅ Experiences already exist (${count} found). Skipping seeding.`);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Seeding error:', err);
   }
 }
 
-// --- MongoDB Connection & Server Start ---
 mongoose
   .connect(process.env.MONGODB_URI || '')
   .then(async () => {
-    console.log('✅ MongoDB connected successfully');
+    console.log('✅ MongoDB connected');
     await seedExperiences();
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+  .catch((err: any) => console.error('❌ MongoDB connection error:', err));
 
-// --- Health Check Route ---
-app.get('/', (_req, res) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send('✅ Bookit Backend is Running!');
 });
